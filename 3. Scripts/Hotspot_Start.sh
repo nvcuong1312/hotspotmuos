@@ -1,8 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
 . /opt/muos/script/var/func.sh
-
-pkill -STOP muxtask
 
 if ! ifconfig wlan1 >/dev/null 2>&1; then
 	if ! lsmod | grep -wq "$(GET_VAR "device" "network/name")"; then
@@ -27,17 +25,30 @@ fi
 ip addr flush dev wlan1
 ip addr add 192.168.89.1/24 dev wlan1
 
+setsid bash -c '
+# Start Hotspot (hostapd)
 echo "Starting Hotspot..."
-setsid bash -c 'hostapd /etc/hostapd/hostapd.conf &'
+setsid nohup hostapd /etc/hostapd/hostapd.conf >/dev/null 2>&1 &
+HOSTAPD_PID=$!
+echo $HOSTAPD_PID > /tmp/hostapd.pid
 sleep 3
 
+# Start DHCP (udhcpd)
 echo "Starting DHCP..."
-setsid bash -c ' udhcpd &'
+setsid nohup udhcpd >/dev/null 2>&1 &
+UDHCPD_PID=$!
+echo $UDHCPD_PID > /tmp/udhcpd.pid
 sleep 3
 
+# Start UPnP (miniupnpd)
 echo "Starting UPnP..."
-setsid bash -c ' miniupnpd &'
+setsid nohup miniupnpd >/dev/null 2>&1 &
+MINIUPNPD_PID=$!
+echo $MINIUPNPD_PID > /tmp/miniupnpd.pid
 sleep 3
+' &
+disown
 
-pkill -CONT muxtask
+sleep 10
+
 exit 0
