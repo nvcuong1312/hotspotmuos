@@ -2,15 +2,16 @@
 
 . /opt/muos/script/var/func.sh
 
-if ifconfig wlan1 >/dev/null 2>&1; then
-else
-    if ! lsmod | grep -wq "$(GET_VAR "device" "network/name")"; then
-	rmmod "$(GET_VAR "device" "network/module")"
-	sleep 1
-	modprobe --force-modversion "$(GET_VAR "device" "network/module")"
-	while [ ! -d "/sys/class/net/$(GET_VAR "device" "network/iface")" ]; do
+pkill -STOP muxtask
+
+if ! ifconfig wlan1 >/dev/null 2>&1; then
+	if ! lsmod | grep -wq "$(GET_VAR "device" "network/name")"; then
+		rmmod "$(GET_VAR "device" "network/module")"
 		sleep 1
-	done
+		modprobe --force-modversion "$(GET_VAR "device" "network/module")"
+		while [ ! -d "/sys/class/net/$(GET_VAR "device" "network/iface")" ]; do
+			sleep 1
+		done
 	fi
 
 	rfkill unblock all
@@ -27,11 +28,16 @@ ip addr flush dev wlan1
 ip addr add 192.168.89.1/24 dev wlan1
 
 echo "Starting Hotspot..."
-nohup hostapd /etc/hostapd/hostapd.conf &
+setsid bash -c 'hostapd /etc/hostapd/hostapd.conf &'
 sleep 3
 
-nohup udhcpd &
+echo "Starting DHCP..."
+setsid bash -c ' udhcpd &'
 sleep 3
 
-nohup miniupnpd &
+echo "Starting UPnP..."
+setsid bash -c ' miniupnpd &'
 sleep 3
+
+pkill -CONT muxtask
+exit 0
