@@ -31,24 +31,22 @@ echo "Starting Hotspot..."
 setsid nohup hostapd /etc/hostapd/hostapd.conf >/dev/null 2>&1 &
 HOSTAPD_PID=$!
 echo $HOSTAPD_PID > /tmp/hostapd.pid
-sleep 3
+sleep 2
 
 # Start DHCP (udhcpd)
 echo "Starting DHCP..."
 setsid nohup udhcpd >/dev/null 2>&1 &
 UDHCPD_PID=$!
 echo $UDHCPD_PID > /tmp/udhcpd.pid
-sleep 3
 
 # Start UPnP (miniupnpd)
 echo "Starting UPnP..."
 setsid nohup miniupnpd >/dev/null 2>&1 &
 MINIUPNPD_PID=$!
 echo $MINIUPNPD_PID > /tmp/miniupnpd.pid
-sleep 3
 ' &
 disown
 
-sleep 10
+sleep 3
 
 exit 0
