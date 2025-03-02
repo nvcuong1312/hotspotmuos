@@ -1,4 +1,5 @@
 #!/bin/sh
+# ICON: Hotspot_Stop
 
 . /opt/muos/script/var/func.sh
 

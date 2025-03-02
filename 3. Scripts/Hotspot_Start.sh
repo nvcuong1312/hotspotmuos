@@ -1,4 +1,5 @@
 #!/bin/bash
+# ICON: Hotspot_Start
 
 . /opt/muos/script/var/func.sh
 
