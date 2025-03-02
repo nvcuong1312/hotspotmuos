@@ -5,8 +5,8 @@ A simple tool to create a WiFi hotspot on gaming devices running muOS, providing
 
 ### 🚀 Features
 - Easy hotspot setup
-- RetroArch netplay support
-- Supports SMTP
+- RetroArch netplay
+- SMTP
 
 ### 📥 Installation
 1. Download the latest release from [GitHub Releases](https://github.com/nvcuong1312/hotspotmuos/releases).
